@@ -17,6 +17,10 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': '',
         'PORT': '',
+    },
+    'evestatic': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'evestatic.db'
     }
 }
 
