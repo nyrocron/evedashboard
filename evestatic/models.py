@@ -20,18 +20,22 @@ from django.db import models
 class InvType(models.Model):
     name = models.CharField(max_length=100)
     invgroup = models.ForeignKey(InvGroup)
-    marketgroup = models.ForeignKey(MarketGroup)
+    marketgroup = models.ForeignKey(MarketGroup, null=True)
     description = models.CharField(max_length=3000)
-    mass = models.FloatField()
-    volume = models.FloatField()
-    capacity = models.FloatField()
-    portion_size = models.IntegerField()
-    race = models.ForeignKey(Race)
+    mass = models.FloatField(null=True)
+    volume = models.FloatField(null=True)
+    capacity = models.FloatField(null=True)
+    portion_size = models.IntegerField(null=True)
+    race = models.ForeignKey(Race, null=True)
     base_price = models.DecimalField(max_digits=19, decimal_places=4)
     published = models.BooleanField()
     
 # equivalent of invGroups
 class InvGroup(models.Model):
+    name = models.CharField(max_length=100)
+    # TODO
+
+class InvCategory(models.Model):
     name = models.CharField(max_length=100)
     # TODO
 
@@ -108,7 +112,6 @@ class SolarSystem(models.Model):
     international = models.BooleanField()
     regional = models.BooleanField()
     constellation = models.BooleanField()
-
 
 class Region(models.Model):
     name = models.CharField(max_length=100)
