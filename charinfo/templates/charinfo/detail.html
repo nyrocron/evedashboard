@@ -1,0 +1,7 @@
+{% extends 'charinfo/base.html' %}
+
+{% block title %}{{ name }}{% endblock %}
+
+{% block content%}
+    <p>{{ name }} [{{ corp }}] {% if alliance %}&lt;{{ alliance }}&gt;{% endif %}</p>
+{% endblock %}

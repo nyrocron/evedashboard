@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Komodo Project File - DO NOT EDIT -->
+<project id="81c2d176-c13d-492e-99c4-e51378e24704" kpf_version="5" name="eve.komodoproject">
+<preference-set idref="81c2d176-c13d-492e-99c4-e51378e24704" id="project" preftype="project">
+  <string id="python3DefaultInterpreter">/usr/bin/python</string>
+  <string id="userEnvironmentStartupOverride">DJANGO_SETTINGS_MODULE=eve.settings
+</string>
+</preference-set>
+</project>

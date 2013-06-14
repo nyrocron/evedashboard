@@ -1,0 +1,20 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}EVE Character Info{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'charinfo/style.css' %}" />
+        <script type="text/javascript" src="{% static 'charinfo/jquery-2.0.2.js' %}"></script>
+        <script type="text/javascript" src="{% static 'charinfo/dynamic.js' %}"></script>
+    </head>
+    <body>
+        <div class="menu">
+            {% block menu %}
+            <ul>
+                <li><a href="{% url 'charinfo:list' %}">Character List</a></li>
+            </ul>
+            {% endblock %}
+        </div>
+        {% block content %}{% endblock%}
+    </body>
+</html>

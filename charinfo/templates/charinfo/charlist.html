@@ -1,0 +1,12 @@
+{% extends 'charinfo/base.html' %}
+{% block content %}
+    {% if characters %}
+        <ul>
+        {% for character in characters %}
+            <li><a href="{% url 'charinfo:detail' character.pk %}">{{ character.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        No characters found.
+    {% endif %}
+{% endblock %}
