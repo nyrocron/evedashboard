@@ -1,5 +1,37 @@
 from django.db import models
 
+# equivalent of invGroups
+class InvGroup(models.Model):
+    name = models.CharField(max_length=100)
+    # TODO
+
+# equivalent of invCategories
+class InvCategory(models.Model):
+    name = models.CharField(max_length=100)
+    # TODO
+
+# equivalent of marketGroups
+class MarketGroup(models.Model):
+    name = models.CharField(max_length=100)
+    # TODO
+
+# equivalent of chrRaces
+#
+# implemented:
+# "raceID" integer NOT NULL, -> pk
+# "raceName" varchar(100) DEFAULT NULL, -> name
+# "description" varchar(1000) DEFAULT NULL, -> description
+# "shortDescription" varchar(500) DEFAULT NULL, -> description_short
+# not implemented:
+# "iconID" integer DEFAULT NULL,
+class Race(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000, null=True)
+    description_short = models.CharField(max_length=500, null=True)
+    
+    def __str__(self):
+        return self.name
+
 # equivalent of invTypes
 #
 # implemented:
@@ -29,35 +61,15 @@ class InvType(models.Model):
     race = models.ForeignKey(Race, null=True)
     base_price = models.DecimalField(max_digits=19, decimal_places=4)
     published = models.BooleanField()
-    
-# equivalent of invGroups
-class InvGroup(models.Model):
+
+class Region(models.Model):
     name = models.CharField(max_length=100)
     # TODO
 
-class InvCategory(models.Model):
+class Constellation(models.Model):
     name = models.CharField(max_length=100)
     # TODO
 
-# equivalent of marketGroups
-class MarketGroup(models.Model):
-    name = models.CharField(max_length=100)
-    # TODO
-
-# equivalent of chrRaces
-#
-# implemented:
-# "raceID" integer NOT NULL, -> pk
-# "raceName" varchar(100) DEFAULT NULL, -> name
-# "description" varchar(1000) DEFAULT NULL, -> description
-# "shortDescription" varchar(500) DEFAULT NULL, -> description_short
-# not implemented:
-# "iconID" integer DEFAULT NULL,
-class Race(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=1000)
-    description_short = models.CharField(max_length=500)
-    
 # equivalent of mapSolarSystems
 #
 # implemented:
@@ -112,11 +124,3 @@ class SolarSystem(models.Model):
     international = models.BooleanField()
     regional = models.BooleanField()
     constellation = models.BooleanField()
-
-class Region(models.Model):
-    name = models.CharField(max_length=100)
-    # TODO
-
-class Constellation(models.Model):
-    name = models.CharField(max_length=100)
-    # TODO
