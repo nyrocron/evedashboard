@@ -44,7 +44,6 @@ class ApiKey(models.Model):
         cachedUntilTimestamp = mktime(strptime(resultObject.cachedUntil + " UTC", "%Y-%m-%d %H:%M:%S %Z"))
         nowTimestamp = mktime(timezone.now().timetuple())
         cacheSeconds = cachedUntilTimestamp - nowTimestamp
-        print("cache miss, caching new result for %s seconds" % cacheSeconds)
         cache.set(queryString, resultObject, cacheSeconds)
         
         return resultObject.result
