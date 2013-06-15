@@ -185,11 +185,7 @@ class Command(NoArgsCommand):
         cursor_static = self._db_static.cursor()
         cursor_static.execute("SELECT " + ",".join([x[0] for x in col_map]) +
                               " FROM " + static_table)
-        
-        # delete old values
-        #cursor_default = self._db_default.cursor()
-        #cursor_default.execute("DELETE FROM " + model._meta.db_table)
-        
+                
         # from sql result create models, apply transform if there is any,
         # then save the created object
         for row in cursor_static.fetchall():
@@ -200,8 +196,6 @@ class Command(NoArgsCommand):
                 else:
                     model_values[col_map[i][1]] = row[i]
             model(**model_values).save()
-        
-        #self.stdout.write("done.")
     
 def _string_null_to_empty(value):
     if value is None:
