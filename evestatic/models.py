@@ -6,14 +6,40 @@ class InvGroup(models.Model):
     # TODO
 
 # equivalent of invCategories
+#
+# implemented:
+# "categoryID" integer NOT NULL, -> pk
+# "categoryName" varchar(100) DEFAULT NULL, -> name
+# "description" varchar(3000) DEFAULT NULL, -> description
+# "published" integer DEFAULT NULL, -> published
+# not implemented:
+# "iconID" integer DEFAULT NULL,
 class InvCategory(models.Model):
     name = models.CharField(max_length=100)
-    # TODO
+    description = models.CharField(max_length=3000)
+    published = models.BooleanField()
+    
+    def __str__(self):
+        return self.name
 
 # equivalent of marketGroups
+#
+# implemented:
+# "marketGroupID" integer NOT NULL, -> pk
+# "parentGroupID" integer DEFAULT NULL, -> parent
+# "marketGroupName" varchar(100) DEFAULT NULL, -> name
+# "description" varchar(3000) DEFAULT NULL, -> description
+# "hasTypes" integer DEFAULT NULL, -> has_types
+# not implemented:
+# "iconID" integer DEFAULT NULL,
 class MarketGroup(models.Model):
     name = models.CharField(max_length=100)
-    # TODO
+    parent = models.ForeignKey('self', null=True)
+    description = models.CharField(max_length=3000)
+    has_types = models.BooleanField()
+    
+    def __str__(self):
+        return self.name
 
 # equivalent of chrRaces
 #
@@ -26,8 +52,8 @@ class MarketGroup(models.Model):
 # "iconID" integer DEFAULT NULL,
 class Race(models.Model):
     name = models.CharField(max_length=100)
-    description = models.CharField(max_length=1000, null=True)
-    description_short = models.CharField(max_length=500, null=True)
+    description = models.CharField(max_length=1000)
+    description_short = models.CharField(max_length=500)
     
     def __str__(self):
         return self.name
