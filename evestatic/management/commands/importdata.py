@@ -1,7 +1,8 @@
 from django.core.management.base import NoArgsCommand, CommandError
 from django.db import connections
 
-from evestatic.models import Race, MarketGroup, InvCategory
+from evestatic.models import Race
+from evestatic.models import MarketGroup, InvCategory, InvGroup
 
 class Command(NoArgsCommand):
     args = ''
@@ -14,6 +15,7 @@ class Command(NoArgsCommand):
         self._import_race()
         self._import_marketgroup()
         self._import_invcategory()
+        self._import_invgroup()
         self.stdout.write("Static data import done.")
     
     def _import_race(self):
@@ -66,19 +68,39 @@ class Command(NoArgsCommand):
             ('published', 'published', _int_to_bool),
         ])
     
-    #def _import_invgroup(self):
-    #    """ Import from invGroups table into InvGroup model"""
-    #    static_table = 'invGroups'
-    #    static_cols = ['groupID', 'categoryID', 'groupName', 'description', 'useBasePrice', 'allowManufacture']
-    #    model_params = ['pk', 'name', 'description', 'published']
-    #    data_transforms = {
-    #        'description': _string_null_to_empty,
-    #        'published': _int_to_bool,
-    #    }
-    #    self._import_data(InvCategory, model_params, static_table, static_cols, data_transforms)
+    def _import_invgroup(self):
+        """ Import from invGroups table into InvGroup model"""
+        # "groupID" integer NOT NULL, -> pk
+        # "categoryID" integer DEFAULT NULL, -> invcategory
+        # "groupName" varchar(100) DEFAULT NULL, -> name
+        # "description" varchar(3000) DEFAULT NULL, -> description
+        # "useBasePrice" integer DEFAULT NULL, -> use_baseprice
+        # "allowManufacture" integer DEFAULT NULL, -> allow_manufacture
+        # "allowRecycler" integer DEFAULT NULL, -> allow_recycler
+        # "anchored" integer DEFAULT NULL, -> anchored
+        # "anchorable" integer DEFAULT NULL, -> anchorable
+        # "fittableNonSingleton" integer DEFAULT NULL, -> fittable_non_singleton
+        # "published" integer DEFAULT NULL, -> published
+        self._import_data('invGroups', InvGroup, [
+            ('groupID', 'pk', None),
+            ('categoryID', 'invcategory_id', None),
+            ('groupName', 'name', None),
+            ('description', 'description', _string_null_to_empty),
+            ('useBasePrice', 'use_baseprice', _int_to_bool),
+            ('allowManufacture', 'allow_manufacture', _int_to_bool),
+            ('allowRecycler', 'allow_recycler', _int_to_bool),
+            ('anchored', 'anchored', _int_to_bool),
+            ('anchorable', 'anchorable', _int_to_bool),
+            ('fittableNonSingleton', 'fittable_non_singleton', _int_to_bool),
+            ('published', 'published', _int_to_bool),
+        ])
     
     def _import_data(self, static_table, model, col_map):
         """ Import data from a static db table to a model"""
+        self.stdout.write("Importing %s -> %s..." %
+                          (static_table, model.__name__))
+                          #ending='')
+        
         # query static db
         cursor_static = self._db_static.cursor()
         cursor_static.execute("SELECT " + ",".join([x[0] for x in col_map]) +
@@ -88,18 +110,18 @@ class Command(NoArgsCommand):
         cursor_default = self._db_default.cursor()
         cursor_default.execute("DELETE FROM " + model._meta.db_table)
         
-        # from sql result create models, apply tranform if there is any,
+        # from sql result create models, apply transform if there is any,
         # then save the created object
         for row in cursor_static.fetchall():
             model_values = dict()
             for i in range(len(col_map)):
-                if col_map[i][2] is not None:
+                if col_map[i][2] is not None: # transform defined
                     model_values[col_map[i][1]] = col_map[i][2](row[i])
                 else:
                     model_values[col_map[i][1]] = row[i]
             model(**model_values).save()
         
-        self.stdout.write("Imported %s -> %s." % (static_table, model.__name__))
+        #self.stdout.write("done.")
     
 def _string_null_to_empty(value):
     if value is None:
