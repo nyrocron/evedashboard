@@ -2,10 +2,10 @@ from django.db import models
 
 from django.contrib.auth.models import User
 
-from eveapi.models import ApiKey, ApiError
+from eveapi.models import APIKey, ApiError
 
 class Character(models.Model):
-    apikey = models.ForeignKey(ApiKey)
+    apikey = models.ForeignKey(APIKey)
     user = models.ForeignKey(User)
     name = models.CharField(max_length=200)
     

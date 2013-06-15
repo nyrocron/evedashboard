@@ -17,7 +17,7 @@ class ApiError(Exception):
             strval += ": " + self._message
         return strval
 
-class ApiKey(models.Model):
+class APIKey(models.Model):
     user = models.ForeignKey(User)
     vcode = models.CharField(max_length=64)
     comment = models.CharField(max_length=100)
