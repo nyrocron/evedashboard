@@ -1,8 +1,9 @@
-from django.core.management.base import NoArgsCommand, CommandError
+from django.core.management.base import NoArgsCommand
 from django.db import connections
 
-from evestatic.models import Race
+from evestatic.models import Race, Faction
 from evestatic.models import MarketGroup, InvCategory, InvGroup, InvType
+from evestatic.models import Region, Constellation, SolarSystem
 
 class Command(NoArgsCommand):
     args = ''
@@ -12,25 +13,48 @@ class Command(NoArgsCommand):
     _db_static = connections['evestatic']
     
     def handle_noargs(self, **options):
+        # chr
         self._import_race()
+        self._import_faction()
+        
+        # inv
         self._import_marketgroup()
         self._import_invcategory()
         self._import_invgroup()
         self._import_invtype()
+        
+        #map
+        self._import_region()
+        self._import_constellation()
+        self._import_solarsystem()
+        
         self.stdout.write("Static data import done.")
     
     def _import_race(self):
         """ Import from chrRaces table to Race model."""
-        self._import_data('chrRaces', Race, [
+        self._import_table_data('chrRaces', Race, [
             ('raceID', 'pk', None),
             ('raceName', 'name', None),
             ('description', 'description', _string_null_to_empty),
             ('shortDescription', 'description_short', _string_null_to_empty),
         ])
     
+    def _import_faction(self):
+        """Import data from chrFactions table to Faction model."""
+        self._import_table_data('chrFactions', Faction, [
+            ('factionID', 'pk', None),
+            ('factionName', 'name', None),
+            #('solarSystemID', 'hq_system_id', None),
+            ('description', 'description', _string_null_to_empty),
+            #('corporationID', 'corporation', None),
+            ('sizeFactor', 'size_factor', None),
+            ('stationCount', 'station_count', None),
+            ('stationSystemCount', 'station_system_count', None),
+        ])
+    
     def _import_marketgroup(self):
         """Import from invMarketGroups table to MargetGroup model."""
-        self._import_data('invMarketGroups', MarketGroup, [
+        self._import_table_data('invMarketGroups', MarketGroup, [
             ('marketGroupID', 'pk', None),
             ('parentGroupID', 'parent_id', None),
             ('marketGroupName', 'name', None),
@@ -40,32 +64,32 @@ class Command(NoArgsCommand):
 
     def _import_invcategory(self):
         """Import from invCategories table to InvCategory model."""
-        self._import_data('invCategories', InvCategory, [
+        self._import_table_data('invCategories', InvCategory, [
             ('categoryID', 'pk', None),
             ('categoryName', 'name', None),
             ('description', 'description', _string_null_to_empty),
-            ('published', 'published', _int_to_bool),
+            ('published', 'is_published', _int_to_bool),
         ])
     
     def _import_invgroup(self):
-        """Import from invGroups table to InvGroup model"""
-        self._import_data('invGroups', InvGroup, [
+        """Import from invGroups table to InvGroup model."""
+        self._import_table_data('invGroups', InvGroup, [
             ('groupID', 'pk', None),
             ('categoryID', 'invcategory_id', None),
             ('groupName', 'name', None),
             ('description', 'description', _string_null_to_empty),
-            ('useBasePrice', 'use_baseprice', _int_to_bool),
-            ('allowManufacture', 'allow_manufacture', _int_to_bool),
-            ('allowRecycler', 'allow_recycler', _int_to_bool),
-            ('anchored', 'anchored', _int_to_bool),
-            ('anchorable', 'anchorable', _int_to_bool),
-            ('fittableNonSingleton', 'fittable_non_singleton', _int_to_bool),
-            ('published', 'published', _int_to_bool),
+            ('useBasePrice', 'is_use_baseprice', _int_to_bool),
+            ('allowManufacture', 'is_allow_manufacture', _int_to_bool),
+            ('allowRecycler', 'is_allow_recycler', _int_to_bool),
+            ('anchored', 'is_anchored', _int_to_bool),
+            ('anchorable', 'is_anchorable', _int_to_bool),
+            ('fittableNonSingleton', 'is_fittable_non_singleton', _int_to_bool),
+            ('published', 'is_published', _int_to_bool),
         ])
     
     def _import_invtype(self):
         """Import from invTypes table to InvTypes model."""
-        self._import_data('invTypes', InvType, [
+        self._import_table_data('invTypes', InvType, [
             ('typeID', 'pk', None),
             ('typeName', 'name', None),
             ('groupID', 'invgroup_id', None),
@@ -76,11 +100,83 @@ class Command(NoArgsCommand):
             ('portionSize', 'portion_size', None),
             ('raceID', 'race_id', None),
             ('basePrice', 'baseprice', None),
-            ('published', 'published', _int_to_bool),
+            ('published', 'is_published', _int_to_bool),
         ])
     
-    def _import_data(self, static_table, model, col_map):
+    def _import_region(self):
+        """Import data from mapRegions table to Region model."""
+        self._import_table_data('mapRegions', Region, [
+            ('regionID', 'pk', None),
+            ('regionName', 'name', None),
+            ('factionID', 'faction_id', None),
+            ('radius', 'radius', None),
+            ('x', 'x', None),
+            ('y', 'y', None),
+            ('z', 'z', None),
+            ('xMin', 'x_min', None),
+            ('yMin', 'y_min', None),
+            ('zMin', 'z_min', None),
+            ('xMax', 'x_max', None),
+            ('yMax', 'y_max', None),
+            ('zMax', 'z_max', None),
+        ])
+    
+    def _import_constellation(self):
+        """Import data from mapConstellations to Constellation model"""
+        self._import_table_data('mapConstellations', Constellation, [
+            ('constellationID', 'pk', None),
+            ('constellationName', 'name', None),
+            ('regionID', 'region_id', None),
+            ('factionID', 'faction_id', None),
+            ('radius', 'radius', None),
+            ('x', 'x', None),
+            ('y', 'y', None),
+            ('z', 'z', None),
+            ('xMin', 'x_min', None),
+            ('yMin', 'y_min', None),
+            ('zMin', 'z_min', None),
+            ('xMax', 'x_max', None),
+            ('yMax', 'y_max', None),
+            ('zMax', 'z_max', None),
+        ])
+    
+    def _import_solarsystem(self):
+        """Import data from mapSolarSystems table to SolarSystem model."""
+        self._import_table_data('mapSolarSystems', SolarSystem, [
+            ('solarSystemID', 'pk', None),
+            ('solarSystemName', 'name', None),
+            ('regionID', 'region_id', None),
+            ('constellationID', 'constellation_id', None),
+            ('security', 'security', None),
+            ('securityClass', 'security_class', None),
+            ('radius', 'radius', None),
+            ('luminosity', 'luminosity', None),
+            ('border', 'is_border', _int_to_bool),
+            ('fringe', 'is_fringe', _int_to_bool),
+            ('corridor', 'is_corridor', _int_to_bool),
+            ('hub', 'is_hub', _int_to_bool),
+            ('international', 'is_international', _int_to_bool),
+            ('regional', 'is_regional', _int_to_bool),
+            ('constellation', 'is_constellation', _int_to_bool),
+            ('x', 'x', None),
+            ('y', 'y', None),
+            ('z', 'z', None),
+            ('xMin', 'x_min', None),
+            ('yMin', 'y_min', None),
+            ('zMin', 'z_min', None),
+            ('xMax', 'x_max', None),
+            ('yMax', 'y_max', None),
+            ('zMax', 'z_max', None),
+        ])
+    
+    def _import_table_data(self, static_table, model, col_map):
         """ Import data from a static db table to a model"""
+        # only import if there are no values in the table
+        if model.objects.count() > 0:
+            self.stdout.write("Model %s already has objects, skipping import" %
+                              model.__name__)
+            return
+        
         self.stdout.write("Importing %s -> %s..." %
                           (static_table, model.__name__))
                           #ending='')
@@ -91,8 +187,8 @@ class Command(NoArgsCommand):
                               " FROM " + static_table)
         
         # delete old values
-        cursor_default = self._db_default.cursor()
-        cursor_default.execute("DELETE FROM " + model._meta.db_table)
+        #cursor_default = self._db_default.cursor()
+        #cursor_default.execute("DELETE FROM " + model._meta.db_table)
         
         # from sql result create models, apply transform if there is any,
         # then save the created object
