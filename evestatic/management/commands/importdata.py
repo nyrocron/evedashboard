@@ -2,7 +2,7 @@ from django.core.management.base import NoArgsCommand, CommandError
 from django.db import connections
 
 from evestatic.models import Race
-from evestatic.models import MarketGroup, InvCategory, InvGroup
+from evestatic.models import MarketGroup, InvCategory, InvGroup, InvType
 
 class Command(NoArgsCommand):
     args = ''
@@ -16,17 +16,11 @@ class Command(NoArgsCommand):
         self._import_marketgroup()
         self._import_invcategory()
         self._import_invgroup()
+        self._import_invtype()
         self.stdout.write("Static data import done.")
     
     def _import_race(self):
-        """ Import from chrRaces table.
-        
-        "raceID" integer NOT NULL, -> pk
-        "raceName" varchar(100) DEFAULT NULL, -> name
-        "description" varchar(1000) DEFAULT NULL, -> description
-        "shortDescription" varchar(500) DEFAULT NULL, -> description_short
-        
-        """
+        """ Import from chrRaces table to Race model."""
         self._import_data('chrRaces', Race, [
             ('raceID', 'pk', None),
             ('raceName', 'name', None),
@@ -35,15 +29,7 @@ class Command(NoArgsCommand):
         ])
     
     def _import_marketgroup(self):
-        """ Import from invMarketGroups table.
-        
-        "marketGroupID" integer NOT NULL, -> pk
-        "parentGroupID" integer DEFAULT NULL, -> parent
-        "marketGroupName" varchar(100) DEFAULT NULL, -> name
-        "description" varchar(3000) DEFAULT NULL, -> description
-        "hasTypes" integer DEFAULT NULL, -> has_types
-    
-        """
+        """Import from invMarketGroups table to MargetGroup model."""
         self._import_data('invMarketGroups', MarketGroup, [
             ('marketGroupID', 'pk', None),
             ('parentGroupID', 'parent_id', None),
@@ -53,14 +39,7 @@ class Command(NoArgsCommand):
         ])
 
     def _import_invcategory(self):
-        """ Import from invCategories table.
-        
-        "categoryID" integer NOT NULL, -> pk
-        "categoryName" varchar(100) DEFAULT NULL, -> name
-        "description" varchar(3000) DEFAULT NULL, -> description
-        "published" integer DEFAULT NULL, -> published
-        
-        """
+        """Import from invCategories table to InvCategory model."""
         self._import_data('invCategories', InvCategory, [
             ('categoryID', 'pk', None),
             ('categoryName', 'name', None),
@@ -69,18 +48,7 @@ class Command(NoArgsCommand):
         ])
     
     def _import_invgroup(self):
-        """ Import from invGroups table into InvGroup model"""
-        # "groupID" integer NOT NULL, -> pk
-        # "categoryID" integer DEFAULT NULL, -> invcategory
-        # "groupName" varchar(100) DEFAULT NULL, -> name
-        # "description" varchar(3000) DEFAULT NULL, -> description
-        # "useBasePrice" integer DEFAULT NULL, -> use_baseprice
-        # "allowManufacture" integer DEFAULT NULL, -> allow_manufacture
-        # "allowRecycler" integer DEFAULT NULL, -> allow_recycler
-        # "anchored" integer DEFAULT NULL, -> anchored
-        # "anchorable" integer DEFAULT NULL, -> anchorable
-        # "fittableNonSingleton" integer DEFAULT NULL, -> fittable_non_singleton
-        # "published" integer DEFAULT NULL, -> published
+        """Import from invGroups table to InvGroup model"""
         self._import_data('invGroups', InvGroup, [
             ('groupID', 'pk', None),
             ('categoryID', 'invcategory_id', None),
@@ -92,6 +60,22 @@ class Command(NoArgsCommand):
             ('anchored', 'anchored', _int_to_bool),
             ('anchorable', 'anchorable', _int_to_bool),
             ('fittableNonSingleton', 'fittable_non_singleton', _int_to_bool),
+            ('published', 'published', _int_to_bool),
+        ])
+    
+    def _import_invtype(self):
+        """Import from invTypes table to InvTypes model."""
+        self._import_data('invTypes', InvType, [
+            ('typeID', 'pk', None),
+            ('typeName', 'name', None),
+            ('groupID', 'invgroup_id', None),
+            ('marketGroupID', 'marketgroup_id', None),
+            ('description', 'description', _string_null_to_empty),
+            ('mass', 'mass', None),
+            ('volume', 'volume', None),
+            ('portionSize', 'portion_size', None),
+            ('raceID', 'race_id', None),
+            ('basePrice', 'baseprice', None),
             ('published', 'published', _int_to_bool),
         ])
     

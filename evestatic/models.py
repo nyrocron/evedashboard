@@ -102,7 +102,7 @@ class InvType(models.Model):
     """ Equivalent of invTypes
     
     "typeID" integer NOT NULL, -> pk
-    "groupID" integer DEFAULT NULL, -> group
+    "groupID" integer DEFAULT NULL, -> invgroup
     "typeName" varchar(100) DEFAULT NULL, -> name
     "description" varchar(3000) DEFAULT NULL, -> description
     "mass" double DEFAULT NULL, -> mass
@@ -110,11 +110,11 @@ class InvType(models.Model):
     "capacity" double DEFAULT NULL, -> capacity
     "portionSize" integer DEFAULT NULL, -> portion_size
     "raceID" integer DEFAULT NULL, -> race
-    "basePrice" decimal(19,4) DEFAULT NULL, -> base_price
+    "basePrice" decimal(19,4) DEFAULT NULL, -> baseprice
     "published" integer DEFAULT NULL, -> published
     "marketGroupID" integer DEFAULT NULL, -> marketgroup
     
-    not implemented
+    not implemented:
     "chanceOfDuplicating" double DEFAULT NULL,
     
     """
@@ -128,8 +128,11 @@ class InvType(models.Model):
     capacity = models.FloatField(null=True)
     portion_size = models.IntegerField(null=True)
     race = models.ForeignKey(Race, null=True)
-    base_price = models.DecimalField(max_digits=19, decimal_places=4)
+    baseprice = models.DecimalField(max_digits=19, decimal_places=4)
     published = models.BooleanField()
+    
+    def __str__(self):
+        return self.name
 
 class Region(models.Model):
     name = models.CharField(max_length=100)
@@ -142,7 +145,6 @@ class Constellation(models.Model):
 class SolarSystem(models.Model):
     """ Equivalent of mapSolarSystems
     
-    implemented:
     "regionID" integer DEFAULT NULL, -> region
     "constellationID" integer DEFAULT NULL, -> constellation
     "solarSystemID" integer NOT NULL, -> pk
