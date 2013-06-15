@@ -271,6 +271,7 @@ class SolarSystem(models.Model):
     name = models.CharField(max_length=100)
     region = models.ForeignKey(Region)
     constellation = models.ForeignKey(Constellation)
+    jumps = models.ManyToManyField('self')
     security = models.FloatField()
     security_class = models.CharField(max_length=2, null=True)
     radius = models.FloatField()

@@ -27,6 +27,7 @@ class Command(NoArgsCommand):
         self._import_region()
         self._import_constellation()
         self._import_solarsystem()
+        self._import_jumps()
         
         self.stdout.write("Static data import done.")
     
@@ -168,6 +169,28 @@ class Command(NoArgsCommand):
             ('yMax', 'y_max', None),
             ('zMax', 'z_max', None),
         ])
+    
+    def _import_jumps(self):
+        """Import data from mapSolarSystemJumps to SolarSystem.jumps"""
+        # only import if there are no values for jumps already
+        cursor_default = self._db_default.cursor()
+        cursor_default.execute("SELECT COUNT(*)"
+                               " FROM evestatic_solarsystem_jumps""")
+        jumps_count = cursor_default.fetchone()[0]
+        if jumps_count > 0:
+            self.stdout.write("evestatic_solarsystem_jumps already has data,"
+                              " skipping import")
+            return
+        
+        self.stdout.write("Importing mapSolarSystemJumps...")
+        
+        cursor_static = self._db_static.cursor()
+        cursor_static.execute("SELECT fromSolarSystemID, toSolarSystemID "
+                              " FROM mapSolarSystemJumps")
+        for row in cursor_static.fetchall():
+            system_from = SolarSystem.objects.get(pk=row[0])
+            system_to = SolarSystem.objects.get(pk=row[1])
+            system_from.jumps.add(system_to)
     
     def _import_table_data(self, static_table, model, col_map):
         """ Import data from a static db table to a model"""
