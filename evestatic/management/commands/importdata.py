@@ -7,7 +7,7 @@ from evestatic.models import InvName, InvCategory, InvGroup, InvType
 from evestatic.models import MarketGroup
 from evestatic.models import NPCCorporation, Race, Faction
 from evestatic.models import Region, Constellation, SolarSystem
-from evestatic.models import Station
+from evestatic.models import MapDenormalize, Station
 
 class Command(NoArgsCommand):
     args = ''
@@ -17,6 +17,11 @@ class Command(NoArgsCommand):
     _db_static = connections['evestatic']
     
     def handle_noargs(self, **options):
+        # attach default to static db
+        cursor_static = self._db_static.cursor()
+        #cursor_static.execute("ATTACH '%s' AS eve" %
+        #                      settings.DATABASES['default']['NAME'])
+        
         # inv
         self._import_invname()
         self._import_marketgroup()
@@ -43,7 +48,7 @@ class Command(NoArgsCommand):
     
     def _import_invname(self, ):
         """Import data from invNames to InvName model."""
-        self._import_table_data('invNames', InvName, [
+        self._import_table_data_direct('invNames', InvName, [
             ('itemID', 'id', None),
             ('itemName', 'name', None)
         ])
@@ -225,15 +230,15 @@ class Command(NoArgsCommand):
     
     def _import_map_denormalize(self):
         """Import data from mapDenormalize to MapDenormalize model."""
-        self._import_table_data('mapDenormalize', MapDenormalize, [
+        self._import_table_data_direct('mapDenormalize', MapDenormalize, [
             ('itemID', 'id', None),
             ('itemName', 'name', None),
-            ('typeID', 'inv_type_id', None),
-            ('groupID', 'inv_group_id', None),
-            ('solarSystemID', 'solarsystem_id', None),
-            ('constellationID', 'constellation_id', None),
-            ('regionID', 'region_id', None),
-            ('orbitID', 'orbit_id', None),
+            ('typeID', 'inv_type', None),
+            ('groupID', 'inv_group', None),
+            ('solarSystemID', 'solarsystem', None),
+            ('constellationID', 'constellation', None),
+            ('regionID', 'region', None),
+            ('orbitID', 'orbit', None),
             ('celestialIndex', 'celestial_index', None),
             ('orbitIndex', 'orbit_index', None),
             ('security', 'security', None),
@@ -280,22 +285,25 @@ class Command(NoArgsCommand):
                               (static_cols, static_table))
         
         # if there are no transformations to be applied, import data via SQL
-        if (all(item[2] is None for item in col_map) and
-            settings.DATABASES['default']['ENGINE'] ==
-                'django.db.backends.sqlite3' and
-            settings.DATABASES['evestatic']['ENGINE'] ==
-                'django.db.backends.sqlite3'):
-            self.stdout.write("using direct import...")
-            model_table = model._meta.db_table
-            model_cols = ",".join([model._meta.get_field(x[1]).column
-                                   for x in col_map])
-            cursor_static.execute("ATTACH '%s' AS eve" %
-                                  settings.DATABASES['default']['NAME'])
-            cursor_static.execute("INSERT INTO eve.%s (%s) SELECT %s FROM %s" %
-                                  (model._meta.db_table, model_cols,
-                                   static_cols, static_table))
-            transaction.commit_unless_managed()
-            return
+        #if (all(item[2] is None for item in col_map) and
+        #    settings.DATABASES['default']['ENGINE'] ==
+        #        'django.db.backends.sqlite3' and
+        #    settings.DATABASES['evestatic']['ENGINE'] ==
+        #        'django.db.backends.sqlite3'):
+        #    self.stdout.write("using direct import...")
+        #    model_table = model._meta.db_table
+        #    model_cols = ",".join([model._meta.get_field(x[1]).column
+        #                           for x in col_map])
+        #    
+        #    cursor_static.execute("ATTACH '%s' AS eve" %
+        #                          settings.DATABASES['default']['NAME'])
+        #    transaction.commit_unless_managed()
+        #    
+        #    cursor_static.execute("INSERT INTO eve.%s (%s) SELECT %s FROM %s" %
+        #                          (model._meta.db_table, model_cols,
+        #                           static_cols, static_table))
+        #    transaction.commit_unless_managed()
+        #    return
                 
         # from sql result create models, apply transform if there is any,
         # then save the created object
@@ -307,6 +315,27 @@ class Command(NoArgsCommand):
                 else:
                     model_values[col_map[i][1]] = row[i]
             model(**model_values).save()
+    
+    def _import_table_data_direct(self, static_table, model, col_map):
+        """Directly import table data via SQL"""
+        assert(settings.DATABASES['default']['ENGINE'] ==
+               'django.db.backends.sqlite3')
+        assert(settings.DATABASES['evestatic']['ENGINE'] ==
+               'django.db.backends.sqlite3')
+                #    model_table = model._meta.db_table
+        
+        self.stdout.write("Direct import: %s -> %s" %
+                          (static_table, model.__name__))
+        
+        cursor_static = self._db_static.cursor()
+        static_cols = ",".join([x[0] for x in col_map])
+        model_cols = ",".join([model._meta.get_field(x[1]).column
+                               for x in col_map])
+        
+        #cursor_static.execute("INSERT INTO eve.%s (%s) SELECT %s FROM %s" %
+        #                      (model._meta.db_table, model_cols,
+        #                       static_cols, static_table))
+        #transaction.commit()
 
 def _int_to_bool(value):
     return value == 1
