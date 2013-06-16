@@ -9,6 +9,7 @@ from eveapi.models import APIKey, ApiError
 from evestatic.models import InvType
 
 class Character(models.Model):
+    character_id = models.IntegerField(primary_key=True)
     apikey = models.ForeignKey(APIKey)
     user = models.ForeignKey(User)
     name = models.CharField(max_length=200)

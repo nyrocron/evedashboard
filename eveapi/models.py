@@ -18,6 +18,7 @@ class ApiError(Exception):
         return strval
 
 class APIKey(models.Model):
+    key_id = models.IntegerField(primary_key=True)
     user = models.ForeignKey(User)
     vcode = models.CharField(max_length=64)
     comment = models.CharField(max_length=100)

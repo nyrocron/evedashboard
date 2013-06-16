@@ -4,11 +4,9 @@
     {% if characters %}
         <div class="chartiles">
         {% for character in characters %}
-            <a href="{% url 'charinfo:detail' character.pk %}">
-                <div class="tile" data-charid="{{ character.pk }}">
-                    <img class="loading" src="{% static 'charinfo/loading.gif' %}" alt="loading..." />
-                </div>
-            </a>
+            <a href="{% url 'charinfo:detail' character.pk %}"><div class="tile" data-charid="{{ character.pk }}">
+                <img class="loading" src="{% static 'charinfo/loading.gif' %}" alt="loading..." />
+            </div></a>
         {% endfor %}
         </div>
     {% else %}
