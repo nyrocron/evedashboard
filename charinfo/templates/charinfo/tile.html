@@ -1,0 +1,18 @@
+{% load staticfiles %}
+{% load charinfo_filters %}
+<img class="portrait" src="http://image.eveonline.com/Character/{{ id }}_512.jpg" alt="{{ name }}" />
+<span class="charname">{{ name }}</span>
+<span class="corpinfo">[{{ corp }}] {% if alliance %}&lt;{{ alliance }}&gt;{% endif %}</span>
+<ul>
+    <li><img src="{% static 'charinfo/money.png' %}" alt="money" />{{ balance|formatnumber:2 }} ISK</li>
+    <li{% if skillpoints > clone_skillpoints %} class="warning"{% endif %}>{{ skillpoints|formatnumber }} / {{ clone_skillpoints|formatnumber }} SP</li>
+    {% if is_training %}
+        <li{% if skillqueue_time.total_seconds < 86400 %} class="warning"{% endif %}>Skillqueue ends in <strong>{{ skillqueue_time.total_seconds|formattimediff }}</strong></li>
+        <li>Training {{ current_skill }} {{ current_skill_level }}</li>
+    {% else %}
+        <li class="warning"><strong>Skillqueue inactive!</strong></li>
+    {% endif %}
+    {% if subscribed_time.total_seconds < 604800 %}
+        <li class="warning">Subscription ends in <strong>{{ subscribed_time.total_seconds|formattimediff }}</strong></li>
+    {% endif %}
+</ul>

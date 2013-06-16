@@ -11,6 +11,27 @@ def charList(request):
     })
 
 @login_required
+def charTile(request, pk):
+    char = get_object_or_404(Character, pk=pk)
+    if char not in request.user.character_set.all():
+        raise PermissionDenied
+    charsheet = char.charactersheet()
+    return render(request, 'charinfo/tile.html', {
+        'id': pk,
+        'name': charsheet.name,
+        'corp': charsheet.corporationName,
+        'alliance': charsheet.allianceName,
+        'balance': float(charsheet.balance),
+        'skillpoints': char.total_skillpoints(),
+        'clone_skillpoints': float(charsheet.cloneSkillPoints),
+        'skillqueue_time': char.skillqueue_time(),
+        'subscribed_time': char.subscribed_time(),
+        'current_skill': char.current_skill(),
+        'current_skill_level': char.current_skill_level(),
+        'is_training': char.is_training(),
+    })
+
+@login_required
 def charDetail(request, pk):
     char = get_object_or_404(Character, pk=pk)
     if char not in request.user.character_set.all():

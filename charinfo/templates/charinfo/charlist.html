@@ -1,11 +1,14 @@
 {% extends 'charinfo/base.html' %}
+{% load staticfiles %}
 {% block content %}
     {% if characters %}
-        <ul>
+        <div class="chartiles">
         {% for character in characters %}
-            <li><a href="{% url 'charinfo:detail' character.pk %}">{{ character.name }}</a></li>
+            <div class="tile" data-charid="{{ character.pk }}">
+                <img class="loading" src="{% static 'charinfo/loading.gif' %}" alt="loading..." />
+            </div>
         {% endfor %}
-        </ul>
+        </div>
     {% else %}
         No characters found.
     {% endif %}

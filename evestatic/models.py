@@ -162,6 +162,10 @@ class InvType(models.Model):
     
     def __str__(self):
         return self.name
+    
+    @staticmethod
+    def get_type_name(type_id):
+        return InvType.objects.get(pk=type_id).name
 
 class Region(models.Model):
     """ Equivalent of mapRegions

@@ -27,10 +27,10 @@ class APIKey(models.Model):
     
     def query(self, query, args):
         queryString = self._make_query_string(query, args)
-        resultObject = cache.get(queryString)
+        result_object = cache.get(queryString)
         # if query is cached, return cached value
-        if resultObject is not None:
-            return resultObject.result
+        if result_object is not None:
+            return result_object.result
         
         # otheriwse query EVE api, write to cache and return result
         con = HTTPSConnection("api.eveonline.com")
@@ -38,15 +38,15 @@ class APIKey(models.Model):
         response = con.getresponse()
         if response.status != 200:
             raise ApiError()
-        resultObject = objectify.fromstring(response.read())
+        result_object = objectify.fromstring(response.read())
         
         # get number of seconds to cache the result and write to cache
-        cachedUntilTimestamp = mktime(strptime(resultObject.cachedUntil + " UTC", "%Y-%m-%d %H:%M:%S %Z"))
-        nowTimestamp = mktime(timezone.now().timetuple())
-        cacheSeconds = cachedUntilTimestamp - nowTimestamp
-        cache.set(queryString, resultObject, cacheSeconds)
+        cached_until_timestamp = mktime(strptime(result_object.cachedUntil + " UTC", "%Y-%m-%d %H:%M:%S %Z"))
+        now_timestamp = mktime(timezone.now().timetuple())
+        cache_seconds = cached_until_timestamp - now_timestamp
+        cache.set(queryString, result_object, cache_seconds)
         
-        return resultObject.result
+        return result_object.result
     
     def _make_query_string(self, query, args):
         if not query.startswith('/'):

@@ -3,33 +3,136 @@ body
     font-family: Segoe UI, sans-serif;
 }
 
-div.menu
+h2, h3, h4, h5
 {
-    width: 100%;
-    text-align: center;
-    background-color: rgb(50, 100, 150);
-    color: rgb(255, 255, 255);
+    font-weight: normal;
 }
 
-div.menu a
+div.menu
 {
-    color: rgb(255, 255, 255);
-    text-decoration: none;
-    font-weight: bold;
+    text-align: center;
 }
 
 div.menu ul
 {
     list-style-type: none;
+    background-color: #17649C;
+    color: white;
+    padding: 5px;
 }
 
 div.menu ul li
 {
-    display: inline-block;
+    display: inline;
     padding: 5px;
 }
 
 div.menu ul li:hover
 {
-    background-color: rgb(60, 110, 160);
+    background-color: #1F76B5;
+    text-decoration: underline;
+}
+
+div.menu ul li a
+{
+    color: white;
+    text-decoration: none;
+}
+
+div.chartiles
+{
+    text-align: center;
+}
+
+div.tile
+{
+    display: inline-block;
+    position: relative;
+    width: 320px;
+    height: 210px;
+    margin: 5px;
+    padding: 5px;
+    
+    background-color: #17649C;
+    color: white;
+    text-align: left;
+    
+    overflow: hidden;
+}
+
+div.tile:hover
+{
+    background-color: #1F76B5;
+}
+
+
+div.tile img.loading
+{
+    position: absolute;
+    left: 134px;
+    top: 84px;
+}
+
+div.tile img.portrait
+{
+    position: absolute;
+    width: 330px;
+    height: 330px;
+    top: -50px;
+    left: 0;
+    opacity: 0.08;
+}
+
+div.tile ul
+{
+    list-style-type: none;
+    padding: 0;
+}
+
+div.tile ul li
+{
+    margin: 3px;
+}
+
+div.tile ul li img
+{
+    margin-right: 5px;
+}
+
+div.tile img.list-icon
+{
+    vertical-align: middle;
+}
+
+div.tile span.charname
+{
+    position: absolute;
+    bottom: 30px;
+    right: 7px;
+    font-size: 2em;
+}
+div.tile:hover span.charname
+{
+    text-shadow: 0 0 10px white;
+}
+
+div.tile span.corpinfo
+{
+    position: absolute;
+    bottom: 7px;
+    right: 7px;
+}
+
+.warning
+{
+    font-style: italic;
+    font-weight: bold;
+    color: #FFBB00;
+}
+
+.warning:before
+{
+    content: url(/static/charinfo/error.png);
+    margin-right: 5px;
+    vertical-align: middle;
 }
