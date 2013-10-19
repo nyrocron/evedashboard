@@ -1,0 +1,85 @@
+evedashboard setup @debian 6
+============================
+
+install basic software
+---------------
+
+add dotdeb repos: http://www.dotdeb.org/instructions/
+sudo apt-get install git, nginx
+
+
+compile python
+---------------
+
+sudo apt-get install zlib-dev, libssl-dev, libxml2-dev, libxslt-dev, libsqlite3-dev
+
+download python source: http://python.org/download/
+unpack, cd
+./configure
+make
+make test
+sudo make install
+
+
+set up python & virtualenv
+---------------
+
+download setuptools: https://pypi.python.org/pypi/setuptools
+unpack, cd
+python3.3 setup.py
+easy_install-3.3 virtualenv
+
+
+create a new user & create virtual env
+---------------
+
+add user, su, cd ~
+mkdir virtual_envs
+virtualenv-3.3 virtual_envs/evedashboard
+source virtual_envs/evedashboard/bin/activate
+pip install django lxml
+
+
+download & install evedashboard
+---------------
+
+git clone git@github.com:nyrocron/evedashboard
+
+download static data
+  latest sqlite from http://pozniak.pl/dbdump/?C=M;O=D
+unpack to evedashbord/evestatic.db
+
+cd evedashboard
+
+python manage.py syncdb
+python manage.py createcachetable evecache
+python manage.py importdata
+
+python manage.py runserver
+add API keys / characters via admin interface
+test character tiles at http://example.com/charinfo
+
+
+install gunicorn & configure nginx
+---------------
+
+pip install gunicorn
+set STATIC_ROOT in eve/settings.py
+python manage.py collectstatic
+
+gunicorn --bind=127.0.0.1:8001 --daemon eve.wsgi
+
+add to nginx config:
+
+  location /evedashboard/ {
+    proxy_pass http://127.0.0.1:8001/;
+    
+    location /evedashboard/static/ {
+      alias /home/evedashboard/static/;
+    }
+  }
+
+edit url in charinfo/static/charinfo/dynamic.js
+
+/etc/init.d/nginx restart
+
