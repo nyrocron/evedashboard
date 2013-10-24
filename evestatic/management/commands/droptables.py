@@ -6,10 +6,10 @@ from django.db.models import get_app, get_models
 class Command(NoArgsCommand):
     args = ''
     help = 'Drops all tables of the evestatic app'
-    
+
     def handle_noargs(self, **options):
         self._drop_app_tables('evestatic')
-    
+
     def _drop_app_tables(self, app_name):
         app = get_app(app_name)
         cursor = connection.cursor()
