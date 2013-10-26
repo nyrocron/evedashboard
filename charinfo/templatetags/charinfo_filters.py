@@ -24,7 +24,8 @@ def format_timediff(value):
         hours, remainder = divmod(remainder, 3600)
         minutes, seconds = divmod(remainder, 60)
         if days > 0:
-            return "{0}d {1}h {2}min".format(days, hours, minutes)
+            return "{0}d {1}h {2}min".format(int(days), int(hours),
+                                             int(minutes))
         else:
             return "{0}h {1}min".format(hours, minutes)
 

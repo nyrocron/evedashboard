@@ -35,7 +35,11 @@ class Character(models.Model):
 
             skill = Skill(type_id, level)
             skill.queue_id = int(row.get('queuePosition'))
-            skill.end_timestamp = _str_to_timestamp(row.get('endTime'))
+
+            try:
+                skill.end_timestamp = _str_to_timestamp(row.get('endTime'))
+            except ValueError:
+                skill.end_timestamp = -1
 
             skillqueue.append(skill)
 
@@ -72,7 +76,7 @@ class Character(models.Model):
                 delta_seconds = 0
             else:
                 queue_end_timestamp = skillqueue[-1].end_timestamp
-                if queue_end_timestamp == 0:
+                if queue_end_timestamp == -1:
                     delta_seconds = 0
                 else:
                     delta_seconds = (queue_end_timestamp -

@@ -8,7 +8,7 @@
     <li{% if skillpoints > clone_skillpoints %} class="warning"{% endif %}>{{ skillpoints|formatnumber }} / {{ clone_skillpoints|formatnumber }} SP</li>
     {% if is_training %}
         <li{% if skillqueue_time.total_seconds < 86400 %} class="warning"{% endif %}>Skillqueue ends in <strong>{{ skillqueue_time.total_seconds|formattimediff }}</strong></li>
-        <li>Training {{ current_skill }} {{ current_skill_level }}</li>
+        <li>Training {{ current_skill }}</li>
     {% else %}
         <li class="warning"><strong>Skillqueue inactive!</strong></li>
     {% endif %}
