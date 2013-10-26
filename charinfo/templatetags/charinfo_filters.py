@@ -40,4 +40,4 @@ def format_timestamp(value):
     except ValueError:
         return None
 
-    return datetime.fromtimestamp(ts)
+    return datetime.fromtimestamp(ts).strftime("%b. %d, %H:%M")

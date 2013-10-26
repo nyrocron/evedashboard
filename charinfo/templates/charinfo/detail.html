@@ -13,7 +13,7 @@
       <h2>Skillqueue</h2>
       <ul>
       {% for skill in skillqueue %}
-        <li>{{ skill }} finishes {{ skill.end_timestamp|formattimestamp|date:"N n H:i" }}</li>
+        <li>{{ skill }} finishes {{ skill.end_timestamp|formattimestamp }}</li>
       {% endfor %}
       </ul>
     </p>
