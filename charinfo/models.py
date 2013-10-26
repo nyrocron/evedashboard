@@ -26,12 +26,21 @@ class Character(models.Model):
             return self._charsheet
 
     def skillqueue(self):
-        """Get SkillQueue API result object for this character."""
-        try:
-            return self._skillqueue
-        except AttributeError:
-            self._skillqueue = self._get_api_result("char/SkillQueue")
-            return self._skillqueue
+        """Get sorted list of skills in the queue."""
+        rows = self._api_skillqueue().rowset
+        skillqueue = []
+        for row in rows.iterchildren():
+            type_id = int(row.get('typeID'))
+            level = int(row.get('level'))
+
+            skill = Skill(type_id, level)
+            skill.queue_id = int(row.get('queuePosition'))
+            skill.end_timestamp = _str_to_timestamp(row.get('endTime'))
+
+            skillqueue.append(skill)
+
+        skillqueue.sort(key=lambda x: x.queue_id)
+        return skillqueue
 
     def accountstatus(self):
         """Get AccountStatus API result object for this character."""
@@ -57,28 +66,18 @@ class Character(models.Model):
         try:
             return self._skillqueue_time
         except AttributeError:
-            skillqueue = self.skillqueue().rowset
+            skillqueue = self.skillqueue()
 
-            current_skill_id = None
-            current_skill_level = None
-            queue_end_timestamp = 0
-            for skill in skillqueue.iterchildren():
-                if int(skill.get('queuePosition')) == 0:
-                    current_skill_id = int(skill.get('typeID'))
-                    current_skill_level = int(skill.get('level'))
-                skill_end_raw = skill.get('endTime')
-                if len(skill_end_raw) > 0:
-                  skill_end_timestamp = _str_to_timestamp(skill_end_raw)
-                  queue_end_timestamp = max(queue_end_timestamp,
-                                            skill_end_timestamp)
-
-            if current_skill_id is None or queue_end_timestamp == 0:
+            if len(skillqueue) == 0:
                 delta_seconds = 0
             else:
-                now_timestamp = mktime(timezone.now().timetuple())
-                delta_seconds = queue_end_timestamp - now_timestamp
-                self._current_skill = InvType.get_type_name(current_skill_id)
-                self._current_skill_level = current_skill_level
+                queue_end_timestamp = skillqueue[-1].end_timestamp
+                if queue_end_timestamp == 0:
+                    delta_seconds = 0
+                else:
+                    delta_seconds = (queue_end_timestamp -
+                                     mktime(timezone.now().timetuple()))
+
             self._skillqueue_time = timedelta(seconds=delta_seconds)
             return self._skillqueue_time
 
@@ -87,31 +86,13 @@ class Character(models.Model):
         try:
             return self._current_skill
         except AttributeError:
-            skillqueue = self.skillqueue().rowset
-
-            current_skill_id = None
-            current_skill_level = None
-            for skill in skillqueue.iterchildren():
-                if int(skill.get('queuePosition')) == 0:
-                    current_skill_id = int(skill.get('typeID'))
-                    current_skill_level = int(skill.get('level'))
-                    break
-
-            if current_skill_id is None:
-                self._current_skill = ""
-                self._current_skill_level = 0
-            else:
-                self._current_skill = InvType.get_type_name(current_skill_id)
-                self._current_skill_level = current_skill_level
+            skillqueue = self.skillqueue()
+            self._current_skill = skillqueue[0]
             return self._current_skill
 
     def current_skill_level(self):
         """Get the level the current skill is being trained to."""
-        try:
-            return self._current_skill_level
-        except AttributeError:
-            self.current_skill()
-            return self._current_skill_level
+        return self.current_skill().level
 
     def is_training(self):
         """Check if this character is training."""
@@ -132,8 +113,28 @@ class Character(models.Model):
             self._subscribed_time = timedelta(seconds=delta_seconds)
             return self._subscribed_time
 
+    def _api_skillqueue(self):
+        """Get SkillQueue API result object for this character."""
+        try:
+            return self._skillqueue
+        except AttributeError:
+            self._skillqueue = self._get_api_result("char/SkillQueue")
+            return self._skillqueue
+
     def _get_api_result(self, query):
         return self.apikey.query(query, {'characterID': self.pk})
+
+class Skill(object):
+    def __init__(self, type_id, level=0):
+        self.type_id = type_id
+        self.level = level
+        self.name = InvType.get_type_name(self.type_id)
+
+    def __str__(self):
+        return ' '.join([self.name, str(self.level)])
+
+    def __repr__(self):
+        return "Skill({0}) '{1}'".format(self.type_id, str(self))
 
 def _str_to_timestamp(time_str):
     return mktime(strptime(" ".join([str(time_str), 'UTC']),

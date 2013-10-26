@@ -1,7 +1,20 @@
 {% extends 'charinfo/base.html' %}
+{% load charinfo_filters %}
 
 {% block title %}{{ name }}{% endblock %}
 
 {% block content%}
-    <p>{{ name }} [{{ corp }}] {% if alliance %}&lt;{{ alliance }}&gt;{% endif %}</p>
+    <p>
+      <strong>{{ name }}</strong> [{{ corp }}]
+      {% if alliance %}&lt;{{ alliance }}&gt;{% endif %}<br />
+      {{ skillpoints|formatnumber }} SP
+    </p>
+    <p>
+      <h2>Skillqueue</h2>
+      <ul>
+      {% for skill in skillqueue %}
+        <li>{{ skill }} finishes {{ skill.end_timestamp|formattimestamp|date:"N n H:i" }}</li>
+      {% endfor %}
+      </ul>
+    </p>
 {% endblock %}

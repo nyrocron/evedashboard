@@ -23,7 +23,7 @@ def charTile(request, pk):
         'alliance': charsheet.allianceName,
         'balance': float(charsheet.balance),
         'skillpoints': char.total_skillpoints(),
-        'clone_skillpoints': float(charsheet.cloneSkillPoints),
+        'clone_skillpoints': charsheet.cloneSkillPoints,
         'skillqueue_time': char.skillqueue_time(),
         'subscribed_time': char.subscribed_time(),
         'current_skill': char.current_skill(),
@@ -41,4 +41,6 @@ def charDetail(request, pk):
         'name': charsheet.name,
         'corp': charsheet.corporationName,
         'alliance': charsheet.allianceName,
+        'skillpoints': char.total_skillpoints(),
+        'skillqueue': char.skillqueue(),
     })
