@@ -18,14 +18,15 @@ def format_number(value, arg=0):
         return value
 
 @register.filter(name='formattimediff')
-def format_timediff(value):
+def format_timediff(value, arg=''):
     try:
         days, remainder = divmod(value, 86400)
         hours, remainder = divmod(remainder, 3600)
         minutes, seconds = divmod(remainder, 60)
         if days > 0:
-            return "{0}d {1}h {2}min".format(int(days), int(hours),
-                                             int(minutes))
+            if arg == 'short':
+                return "{0}d {1}h".format(int(days), int(hours))
+            return "{0}d {1}h {2}min".format(int(days), int(hours), int(minutes))
         else:
             return "{0}h {1}min".format(hours, minutes)
 

@@ -13,6 +13,6 @@
         <li class="warning"><strong>Skillqueue inactive!</strong></li>
     {% endif %}
     {% if subscribed_time.total_seconds < 604800 %}
-        <li class="warning">Subscription ends in <strong>{{ subscribed_time.total_seconds|formattimediff }}</strong></li>
+        <li class="warning">Subscription ends in <strong>{{ subscribed_time.total_seconds|formattimediff:"short" }}</strong></li>
     {% endif %}
 </ul>
