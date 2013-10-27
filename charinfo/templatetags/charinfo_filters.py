@@ -23,10 +23,15 @@ def format_timediff(value, arg=''):
         days, remainder = divmod(value, 86400)
         hours, remainder = divmod(remainder, 3600)
         minutes, seconds = divmod(remainder, 60)
+
+        days = int(days)
+        hours = int(hours)
+        minutes = int(minutes)
+
         if days > 0:
             if arg == 'short':
-                return "{0}d {1}h".format(int(days), int(hours))
-            return "{0}d {1}h {2}min".format(int(days), int(hours), int(minutes))
+                return "{0}d {1}h".format(days, hours)
+            return "{0}d {1}h {2}min".format(days, hours, minutes)
         else:
             return "{0}h {1}min".format(hours, minutes)
 
