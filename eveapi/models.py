@@ -1,5 +1,6 @@
 from time import strptime, mktime
-from http.client import HTTPSConnection
+from http.client import HTTPConnection, HTTPSConnection
+from urllib.parse import urlunsplit, urlencode
 from lxml import objectify
 
 from django.db import models
@@ -27,25 +28,28 @@ class APIKey(models.Model):
         return str(self.pk) + " " + self.comment
 
     def query(self, query, args):
-        queryString = self._make_query_string(query, args)
-        result_object = cache.get(queryString)
+        api_baseurl = 'https://'
+
+        query_string = self._make_query_string(query, args)
+        result_object = cache.get(query_string)
+
         # if query is cached, return cached value
         if result_object is not None:
             return result_object.result
 
         # otheriwse query EVE api, write to cache and return result
-        con = HTTPSConnection("api.eveonline.com")
-        con.request("GET", queryString)
+        con = HTTPSConnection('api.eveonline.com')
+        con.request("GET", query_string)
         response = con.getresponse()
         if response.status != 200:
-            raise ApiError()
+            raise ApiError(query_string + ' returned HTTP ' + str(response.status))
         result_object = objectify.fromstring(response.read())
 
         # get number of seconds to cache the result and write to cache
         cached_until_timestamp = mktime(strptime(result_object.cachedUntil + " UTC", "%Y-%m-%d %H:%M:%S %Z"))
         now_timestamp = mktime(timezone.now().timetuple())
         cache_seconds = cached_until_timestamp - now_timestamp
-        cache.set(queryString, result_object, cache_seconds)
+        cache.set(query_string, result_object, cache_seconds)
 
         return result_object.result
 
@@ -56,4 +60,4 @@ class APIKey(models.Model):
             query += ".xml.aspx"
         args['keyID'] = self.pk
         args['vCode'] = self.vcode
-        return "?".join([query, "&".join(["=".join(map(str, i)) for i in args.items()])])
+        return urlunsplit(('', '', query, urlencode(args), ''))
