@@ -1,5 +1,5 @@
 from time import strptime, mktime
-from http.client import HTTPConnection, HTTPSConnection
+from http.client import HTTPSConnection
 from urllib.parse import urlunsplit, urlencode
 from lxml import objectify
 
@@ -28,8 +28,6 @@ class APIKey(models.Model):
         return str(self.pk) + " " + self.comment
 
     def query(self, query, args):
-        api_baseurl = 'https://'
-
         query_string = self._make_query_string(query, args)
         result_object = cache.get(query_string)
 
