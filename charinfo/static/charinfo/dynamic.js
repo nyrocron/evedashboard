@@ -7,6 +7,6 @@ function updateTiles() {
     var characterID = $(this).data("charid");
     $(this).load("/charinfo/tile/" + characterID + "/");
   });
-  
-  setTimeout(updateTiles, 5000);
+
+  setTimeout(updateTiles, 30000);
 }
