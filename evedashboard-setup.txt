@@ -1,4 +1,4 @@
-evedashboard setup @debian 6
+evedashboard setup notes
 ============================
 
 install basic software
@@ -8,7 +8,7 @@ add dotdeb repos: http://www.dotdeb.org/instructions/
 sudo apt-get install git, nginx
 
 
-compile python
+(compile python) -> if available, install from your distro's repositories
 ---------------
 
 sudo apt-get install zlib-dev, libssl-dev, libxml2-dev, libxslt-dev, libsqlite3-dev
@@ -21,7 +21,7 @@ make test
 sudo make install
 
 
-set up python & virtualenv
+(set up python & virtualenv) -> if available, install from your distro's repositories
 ---------------
 
 download setuptools: https://pypi.python.org/pypi/setuptools
@@ -64,7 +64,8 @@ install gunicorn & configure nginx
 ---------------
 
 pip install gunicorn
-set STATIC_ROOT in eve/settings.py
+set STATIC_ROOT, STATIC_URL, LOGIN_URL, SECRET_KEY in eve/settings.py
+  see settings.py.example
 python manage.py collectstatic
 
 gunicorn --bind=127.0.0.1:8001 --daemon eve.wsgi
