@@ -87,7 +87,7 @@ STATICFILES_FINDERS = [
 ]
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 't*o0hy#(w@t*a5#zlr__y$fhe4av*v*-b101h0y_60)+tc8s8w'
+SECRET_KEY = 'evedashboard' # change this
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = [
