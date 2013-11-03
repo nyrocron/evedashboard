@@ -1,5 +1,10 @@
 evedashboard setup notes
-============================
+========================
+
+These are just some hints that might help you get evedashboard set up but are mainly for my personal use.
+Detailed installation instructions will follow.
+
+
 
 install basic software
 ---------------
