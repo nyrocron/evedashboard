@@ -13,7 +13,7 @@ def charList(request):
 @login_required
 def charTile(request, pk):
     char = get_object_or_404(Character, pk=pk)
-    if char not in request.user.character_set.all():
+    if char.user != request.user:
         raise PermissionDenied
     charsheet = char.charactersheet()
     return render(request, 'charinfo/tile.html', {
@@ -34,7 +34,7 @@ def charTile(request, pk):
 @login_required
 def charDetail(request, pk):
     char = get_object_or_404(Character, pk=pk)
-    if char not in request.user.character_set.all():
+    if char.user != request.user:
         raise PermissionDenied
     charsheet = char.charactersheet()
     return render(request, 'charinfo/detail.html', {
