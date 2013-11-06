@@ -128,15 +128,16 @@ class Character(models.Model):
     def ship(self):
         """Get the ship the character is currently flying."""
         ship = self.assetlist().row
-        item_id = ship.get('itemID')
+        #item_id = ship.get('itemID')
         type_id = ship.get('typeID')
-        location = self.item_locations([item_id]).row
-        ship_name = location.get('itemName')
+        #location = self.item_locations([item_id]).row
+        #ship_name = location.get('itemName')
         type_name = InvType.get_type_name(type_id)
-        return "{0} [{1}]".format(ship_name, type_name)
+        #return "{0} [{1}]".format(ship_name, type_name)
+        return type_name
 
     def item_locations(self, item_ids):
-        id_string = ','.join(item_ids)
+        id_string = ','.join(map(str, item_ids))
         result = self._get_api_result("char/Locations", {'IDs': id_string})
         return result.rowset
 
