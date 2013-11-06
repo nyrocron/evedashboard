@@ -25,6 +25,14 @@ class Character(models.Model):
             self._charsheet = self._get_api_result("char/CharacterSheet")
             return self._charsheet
 
+    def assetlist(self):
+        """Get asset list for this character."""
+        try:
+            return self._assetlist
+        except AttributeError:
+            self._assetlist = self._get_api_result("char/AssetList").rowset
+            return self._assetlist
+
     def skillqueue(self):
         """Get sorted list of skills in the queue."""
         rows = self._api_skillqueue().rowset
@@ -117,6 +125,21 @@ class Character(models.Model):
             self._subscribed_time = timedelta(seconds=delta_seconds)
             return self._subscribed_time
 
+    def ship(self):
+        """Get the ship the character is currently flying."""
+        ship = self.assetlist().row
+        item_id = ship.get('itemID')
+        type_id = ship.get('typeID')
+        location = self.item_locations([item_id]).row
+        ship_name = location.get('itemName')
+        type_name = InvType.get_type_name(type_id)
+        return "{0} [{1}]".format(ship_name, type_name)
+
+    def item_locations(self, item_ids):
+        id_string = ','.join(item_ids)
+        result = self._get_api_result("char/Locations", {'IDs': id_string})
+        return result.rowset
+
     def _api_skillqueue(self):
         """Get SkillQueue API result object for this character."""
         try:
@@ -125,8 +148,9 @@ class Character(models.Model):
             self._skillqueue = self._get_api_result("char/SkillQueue")
             return self._skillqueue
 
-    def _get_api_result(self, query):
-        return self.apikey.query(query, {'characterID': self.pk})
+    def _get_api_result(self, query, args={}):
+        return self.apikey.query(query,
+                                 _merge_dict({'characterID': self.pk}, args))
 
 class Skill(object):
     def __init__(self, type_id, level=0):
@@ -143,3 +167,6 @@ class Skill(object):
 def _str_to_timestamp(time_str):
     return mktime(strptime(" ".join([str(time_str), 'UTC']),
                            "%Y-%m-%d %H:%M:%S %Z"))
+
+def _merge_dict(a, b):
+    return dict(list(a.items()) + list(b.items()))

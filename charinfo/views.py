@@ -43,4 +43,5 @@ def charDetail(request, pk):
         'alliance': charsheet.allianceName,
         'skillpoints': char.total_skillpoints(),
         'skillqueue': char.skillqueue(),
+        'ship': char.ship(),
     })
