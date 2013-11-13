@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     # url(r'^eve/', include('eve.foo.urls')),
 
     url(r'^charinfo/', include('charinfo.urls', namespace="charinfo")),
+    url(r'^charmanager/', include('charmanager.urls', namespace="charmanager")),
     url('^accounts/', include('django.contrib.auth.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

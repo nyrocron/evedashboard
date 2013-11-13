@@ -1,0 +1,26 @@
+{% extends 'charinfo/base.html' %}
+
+{% block content %}
+<div class="charlist">
+  {% if characters %}
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>API Key</th>
+    </tr>
+    {% for character in characters %}
+    <tr>
+      <td>{{ character.pk }}</td>
+      <td>{{ character.name }}</td>
+      <td>{{ character.apikey }}</td>
+      <td><a href="{% url 'charmanager:delete' character.pk %}">del</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  No Characters found.
+  {% endif %}
+  <a href="{% url 'charmanager:add' %}">add character</a>
+</div>
+{% endblock %}
