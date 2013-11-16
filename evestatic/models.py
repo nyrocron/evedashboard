@@ -299,3 +299,36 @@ class SolarSystem(models.Model):
 
     def __str__(self):
         return self.name
+
+class Station(models.Model):
+    """Equivalent of staStations
+
+    "stationID" int(11) NOT NULL, -> pk
+    "stationName" varchar(100) DEFAULT NULL, -> name
+    "solarSystemID" int(11) DEFAULT NULL, -> solarsystem
+    "constellationID" int(11) DEFAULT NULL, -> constellation
+    "regionID" int(11) DEFAULT NULL, -> region
+    "x" double DEFAULT NULL, -> x
+    "y" double DEFAULT NULL, -> y
+    "z" double DEFAULT NULL, -> z
+
+    not implemented:
+    "security" smallint(6) DEFAULT NULL,
+    "dockingCostPerVolume" double DEFAULT NULL,
+    "maxShipVolumeDockable" double DEFAULT NULL,
+    "officeRentalCost" int(11) DEFAULT NULL,
+    "operationID" tinyint(3) DEFAULT NULL,
+    "stationTypeID" int(11) DEFAULT NULL,
+    "corporationID" int(11) DEFAULT NULL,
+    "reprocessingEfficiency" double DEFAULT NULL,
+    "reprocessingStationsTake" double DEFAULT NULL,
+    "reprocessingHangarFlag" tinyint(4) DEFAULT NULL,
+    """
+
+    name = models.CharField(max_length=100)
+    solarsystem = models.ForeignKey(SolarSystem)
+    constellation = models.ForeignKey(Constellation)
+    region = models.ForeignKey(Region)
+    x = models.FloatField()
+    y = models.FloatField()
+    z = models.FloatField()

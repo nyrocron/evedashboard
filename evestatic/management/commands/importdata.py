@@ -4,33 +4,37 @@ from django.db import connections
 from evestatic.models import Race, Faction
 from evestatic.models import MarketGroup, InvCategory, InvGroup, InvType
 from evestatic.models import Region, Constellation, SolarSystem
+from evestatic.models import Station
 
 class Command(NoArgsCommand):
     args = ''
     help = 'imports EVE static data'
-    
+
     _db_default = connections['default']
     _db_static = connections['evestatic']
-    
+
     def handle_noargs(self, **options):
         # chr
         self._import_race()
         self._import_faction()
-        
+
         # inv
         self._import_marketgroup()
         self._import_invcategory()
         self._import_invgroup()
         self._import_invtype()
-        
-        #map
+
+        # map
         self._import_region()
         self._import_constellation()
         self._import_solarsystem()
         self._import_jumps()
-        
+
+        # other
+        self._import_station()
+
         self.stdout.write("Static data import done.")
-    
+
     def _import_race(self):
         """ Import from chrRaces table to Race model."""
         self._import_table_data('chrRaces', Race, [
@@ -39,20 +43,18 @@ class Command(NoArgsCommand):
             ('description', 'description', _string_null_to_empty),
             ('shortDescription', 'description_short', _string_null_to_empty),
         ])
-    
+
     def _import_faction(self):
         """Import data from chrFactions table to Faction model."""
         self._import_table_data('chrFactions', Faction, [
             ('factionID', 'pk', None),
             ('factionName', 'name', None),
-            #('solarSystemID', 'hq_system_id', None),
             ('description', 'description', _string_null_to_empty),
-            #('corporationID', 'corporation', None),
             ('sizeFactor', 'size_factor', None),
             ('stationCount', 'station_count', None),
             ('stationSystemCount', 'station_system_count', None),
         ])
-    
+
     def _import_marketgroup(self):
         """Import from invMarketGroups table to MargetGroup model."""
         self._import_table_data('invMarketGroups', MarketGroup, [
@@ -71,7 +73,7 @@ class Command(NoArgsCommand):
             ('description', 'description', _string_null_to_empty),
             ('published', 'is_published', _int_to_bool),
         ])
-    
+
     def _import_invgroup(self):
         """Import from invGroups table to InvGroup model."""
         self._import_table_data('invGroups', InvGroup, [
@@ -87,7 +89,7 @@ class Command(NoArgsCommand):
             ('fittableNonSingleton', 'is_fittable_non_singleton', _int_to_bool),
             ('published', 'is_published', _int_to_bool),
         ])
-    
+
     def _import_invtype(self):
         """Import from invTypes table to InvTypes model."""
         self._import_table_data('invTypes', InvType, [
@@ -103,7 +105,7 @@ class Command(NoArgsCommand):
             ('basePrice', 'baseprice', None),
             ('published', 'is_published', _int_to_bool),
         ])
-    
+
     def _import_region(self):
         """Import data from mapRegions table to Region model."""
         self._import_table_data('mapRegions', Region, [
@@ -121,7 +123,7 @@ class Command(NoArgsCommand):
             ('yMax', 'y_max', None),
             ('zMax', 'z_max', None),
         ])
-    
+
     def _import_constellation(self):
         """Import data from mapConstellations to Constellation model"""
         self._import_table_data('mapConstellations', Constellation, [
@@ -140,7 +142,7 @@ class Command(NoArgsCommand):
             ('yMax', 'y_max', None),
             ('zMax', 'z_max', None),
         ])
-    
+
     def _import_solarsystem(self):
         """Import data from mapSolarSystems table to SolarSystem model."""
         self._import_table_data('mapSolarSystems', SolarSystem, [
@@ -169,7 +171,20 @@ class Command(NoArgsCommand):
             ('yMax', 'y_max', None),
             ('zMax', 'z_max', None),
         ])
-    
+
+    def _import_station(self):
+        """Import data from staStations to Station"""
+        self._import_table_data('staStations', Station, [
+            ('stationID', 'pk', None),
+            ('stationName', 'name', None),
+            ('solarSystemID', 'solarsystem_id', None),
+            ('constellationID', 'constellation_id', None),
+            ('regionID', 'region_id', None),
+            ('x', 'x', None),
+            ('y', 'y', None),
+            ('z', 'z', None),
+        ])
+
     def _import_jumps(self):
         """Import data from mapSolarSystemJumps to SolarSystem.jumps"""
         # only import if there are no values for jumps already
@@ -181,9 +196,9 @@ class Command(NoArgsCommand):
             self.stdout.write("evestatic_solarsystem_jumps already has data,"
                               " skipping import")
             return
-        
+
         self.stdout.write("Importing mapSolarSystemJumps...")
-        
+
         cursor_static = self._db_static.cursor()
         cursor_static.execute("SELECT fromSolarSystemID, toSolarSystemID "
                               " FROM mapSolarSystemJumps")
@@ -191,7 +206,7 @@ class Command(NoArgsCommand):
             system_from = SolarSystem.objects.get(pk=row[0])
             system_to = SolarSystem.objects.get(pk=row[1])
             system_from.jumps.add(system_to)
-    
+
     def _import_table_data(self, static_table, model, col_map):
         """ Import data from a static db table to a model"""
         # only import if there are no values in the table
@@ -199,16 +214,15 @@ class Command(NoArgsCommand):
             self.stdout.write("Model %s already has objects, skipping import" %
                               model.__name__)
             return
-        
+
         self.stdout.write("Importing %s -> %s..." %
                           (static_table, model.__name__))
-                          #ending='')
-        
+
         # query static db
         cursor_static = self._db_static.cursor()
         cursor_static.execute("SELECT " + ",".join([x[0] for x in col_map]) +
                               " FROM " + static_table)
-                
+
         # from sql result create models, apply transform if there is any,
         # then save the created object
         for row in cursor_static.fetchall():
@@ -219,7 +233,7 @@ class Command(NoArgsCommand):
                 else:
                     model_values[col_map[i][1]] = row[i]
             model(**model_values).save()
-    
+
 def _string_null_to_empty(value):
     if value is None:
         return ""
