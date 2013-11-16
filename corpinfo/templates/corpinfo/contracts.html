@@ -1,0 +1,9 @@
+{% extends 'charinfo/base.html' %}
+
+{% block content %}
+<ul>
+  {% for contract in contracts %}
+  <li>{{ contract }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

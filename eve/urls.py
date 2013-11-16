@@ -11,6 +11,7 @@ urlpatterns = patterns('',
 
     url(r'^charinfo/', include('charinfo.urls', namespace="charinfo")),
     url(r'^charmanager/', include('charmanager.urls', namespace="charmanager")),
+    url(r'^corpinfo/', include('corpinfo.urls', namespace="corpinfo")),
     url('^accounts/', include('django.contrib.auth.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

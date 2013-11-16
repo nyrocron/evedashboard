@@ -1,0 +1,9 @@
+{% extends 'charinfo/base.html' %}
+
+{% block content %}
+<ul>
+  {% for corp in corps %}
+  <li>{{ corp.name }}: <a href="{% url 'corpinfo:contracts' corp.pk %}">contracts</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}

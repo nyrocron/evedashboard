@@ -5,6 +5,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from eve.util import *
+
 from eveapi.models import APIKey, ApiError
 from evestatic.models import InvType
 
@@ -151,7 +153,7 @@ class Character(models.Model):
 
     def _get_api_result(self, query, args={}):
         return self.apikey.query(query,
-                                 _merge_dict({'characterID': self.pk}, args))
+                                 merge_dict({'characterID': self.pk}, args))
 
 class Skill(object):
     def __init__(self, type_id, level=0):
@@ -168,6 +170,3 @@ class Skill(object):
 def _str_to_timestamp(time_str):
     return mktime(strptime(" ".join([str(time_str), 'UTC']),
                            "%Y-%m-%d %H:%M:%S %Z"))
-
-def _merge_dict(a, b):
-    return dict(list(a.items()) + list(b.items()))
