@@ -150,7 +150,7 @@ class Character(models.Model):
         except AttributeError:
             alliance = ""
 
-        if len(alliance) > 0:
+        if alliance != "":
             return "[{0}] <{1}>".format(corp, alliance)
         else:
             return "[{0}]".format(corp)
