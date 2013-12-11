@@ -2,7 +2,7 @@
 {% load charinfo_filters %}
 <img class="portrait" src="http://image.eveonline.com/Character/{{ id }}_512.jpg" alt="{{ name }}" />
 <span class="charname">{{ name }}</span>
-<span class="corpinfo">[{{ corp }}] {% if alliance %}&lt;{{ alliance }}&gt;{% endif %}</span>
+<span class="corpinfo">{{ corptag }}</span>
 <ul>
     <li><img src="{% static 'charinfo/money.png' %}" alt="money" />{{ balance|formatnumber:2 }} ISK</li>
     <li{% if skillpoints > clone_skillpoints %} class="warning"{% endif %}>{{ skillpoints|formatnumber }} / {{ clone_skillpoints|formatnumber }} SP</li>

@@ -19,8 +19,7 @@ def charTile(request, pk):
     return render(request, 'charinfo/tile.html', {
         'id': pk,
         'name': charsheet.name,
-        'corp': charsheet.corporationName,
-        'alliance': charsheet.allianceName,
+        'corptag': char.corptag(),
         'balance': float(charsheet.balance),
         'skillpoints': char.total_skillpoints(),
         'clone_skillpoints': charsheet.cloneSkillPoints,

@@ -143,6 +143,15 @@ class Character(models.Model):
         result = self._get_api_result("char/Locations", {'IDs': id_string})
         return result.rowset
 
+    def corptag(self):
+        char_sheet = self.charactersheet()
+        corp = char_sheet.corporationName
+        try:
+            alliance = char_sheet.allianceName
+            return "[{0}] <{1}>".format(corp, alliance)
+        except AttributeError:
+            return "[{0}]".format(corp)
+
     def _api_skillqueue(self):
         """Get SkillQueue API result object for this character."""
         try:
