@@ -129,13 +129,10 @@ class Character(models.Model):
 
     def ship(self):
         """Get the ship the character is currently flying."""
+        # TODO fix when pilot is docked
         ship = self.assetlist().row
-        #item_id = ship.get('itemID')
         type_id = ship.get('typeID')
-        #location = self.item_locations([item_id]).row
-        #ship_name = location.get('itemName')
         type_name = InvType.get_type_name(type_id)
-        #return "{0} [{1}]".format(ship_name, type_name)
         return type_name
 
     def item_locations(self, item_ids):
@@ -144,12 +141,18 @@ class Character(models.Model):
         return result.rowset
 
     def corptag(self):
+        """Get a tag in the style [corp] <ally>."""
         char_sheet = self.charactersheet()
+
         corp = char_sheet.corporationName
         try:
             alliance = char_sheet.allianceName
-            return "[{0}] <{1}>".format(corp, alliance)
         except AttributeError:
+            alliance = ""
+
+        if len(alliance) > 0:
+            return "[{0}] <{1}>".format(corp, alliance)
+        else:
             return "[{0}]".format(corp)
 
     def _api_skillqueue(self):
