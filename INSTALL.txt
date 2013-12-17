@@ -42,6 +42,11 @@ add user, su, cd ~
 mkdir virtual_envs
 virtualenv-3.3 virtual_envs/evedashboard
 source virtual_envs/evedashboard/bin/activate
+
+
+install required python modules
+---------------
+
 pip install django lxml
 
 
@@ -55,6 +60,8 @@ download static data
 unpack to evedashbord/evestatic.db
 
 cd evedashboard
+
+create eve/settings.py, use eve/settings.py.example as template
 
 python manage.py syncdb
 python manage.py createcachetable evecache
