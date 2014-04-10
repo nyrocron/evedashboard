@@ -220,6 +220,7 @@ class Command(NoArgsCommand):
 
         # query static db
         cursor_static = self._db_static.cursor()
+        self._db_static.connection.text_factory = lambda s: s.decode('utf-8', errors='ignore')
         cursor_static.execute("SELECT " + ",".join([x[0] for x in col_map]) +
                               " FROM " + static_table)
 
