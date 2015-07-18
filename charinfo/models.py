@@ -77,8 +77,11 @@ class Character(models.Model):
 
     def skillqueue_time(self):
         """Get time until the end of this character's skillqueue."""
+        queue_time = None
+
         try:
-            return self._skillqueue_time
+            queue_time = self._skillqueue_time
+
         except AttributeError:
             skillqueue = self.skillqueue()
 
@@ -93,24 +96,30 @@ class Character(models.Model):
                                      mktime(timezone.now().timetuple()))
 
             self._skillqueue_time = timedelta(seconds=delta_seconds)
-            return self._skillqueue_time
+            queue_time = self._skillqueue_time
+
+        return queue_time
 
     def current_skill(self):
-        """Get the name of the first skill in the queue."""
+        """Get the first skill in the queue."""
         try:
             return self._current_skill
         except AttributeError:
             skillqueue = self.skillqueue()
-            self._current_skill = skillqueue[0]
+            if len(skillqueue) > 0:
+                self._current_skill = skillqueue[0]
+            else:
+                self._current_skill = None
             return self._current_skill
 
     def current_skill_level(self):
         """Get the level the current skill is being trained to."""
-        return self.current_skill().level
+        skill = self.current_skill()
+        return skill.level if skill is not None else 0
 
     def is_training(self):
         """Check if this character is training."""
-        return self.skillqueue_time() > timedelta(0)
+        return len(self.skillqueue()) > 0 and self.skillqueue_time() > timedelta(0)
 
     def subscribed_time(self):
         """
@@ -164,8 +173,8 @@ class Character(models.Model):
             return self._skillqueue
 
     def _get_api_result(self, query, args={}):
-        return self.apikey.query(query,
-                                 merge_dict({'characterID': self.pk}, args))
+        api_args = merge_dict({'characterID': self.pk}, args)
+        return self.apikey.query(query, api_args)
 
 class Skill(object):
     def __init__(self, type_id, level=0):

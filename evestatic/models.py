@@ -40,9 +40,7 @@ class Faction(models.Model):
     """
 
     name = models.CharField(max_length=100)
-    #hq_system = models.ForeignKey('SolarSystem')
     description = models.CharField(max_length=1000)
-    #corporation = models.ForeignKey(Corporation)
     size_factor = models.FloatField()
     station_count = models.IntegerField()
     station_system_count = models.IntegerField()
@@ -56,7 +54,6 @@ class InvCategory(models.Model):
 
     "categoryID" integer NOT NULL, -> pk
     "categoryName" varchar(100) DEFAULT NULL, -> name
-    "description" varchar(3000) DEFAULT NULL, -> description
     "published" integer DEFAULT NULL, -> is_published
 
     not implemented:
@@ -65,7 +62,6 @@ class InvCategory(models.Model):
     """
 
     name = models.CharField(max_length=100)
-    description = models.CharField(max_length=3000)
     is_published = models.BooleanField()
 
     def __str__(self):
@@ -78,10 +74,7 @@ class InvGroup(models.Model):
     "groupID" integer NOT NULL, -> pk
     "categoryID" integer DEFAULT NULL, -> invcategory
     "groupName" varchar(100) DEFAULT NULL, -> name
-    "description" varchar(3000) DEFAULT NULL, -> description
     "useBasePrice" integer DEFAULT NULL, -> is_use_baseprice
-    "allowManufacture" integer DEFAULT NULL, -> is_allow_manufacture
-    "allowRecycler" integer DEFAULT NULL, -> is_allow_recycler
     "anchored" integer DEFAULT NULL, -> is_anchored
     "anchorable" integer DEFAULT NULL, -> is_anchorable
     "fittableNonSingleton" integer DEFAULT NULL, -> is_fittable_non_singleton
@@ -94,10 +87,7 @@ class InvGroup(models.Model):
 
     name = models.CharField(max_length=100)
     invcategory = models.ForeignKey(InvCategory)
-    description = models.CharField(max_length=3000)
     is_use_baseprice = models.BooleanField()
-    is_allow_manufacture = models.BooleanField()
-    is_allow_recycler = models.BooleanField()
     is_anchored = models.BooleanField()
     is_anchorable = models.BooleanField()
     is_fittable_non_singleton = models.BooleanField()
@@ -157,7 +147,7 @@ class InvType(models.Model):
     volume = models.FloatField(null=True)
     capacity = models.FloatField(null=True)
     portion_size = models.IntegerField(null=True)
-    baseprice = models.DecimalField(max_digits=19, decimal_places=4)
+    baseprice = models.DecimalField(max_digits=19, decimal_places=4, null=True)
     is_published = models.BooleanField()
 
     def __str__(self):

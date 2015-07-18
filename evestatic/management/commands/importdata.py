@@ -70,7 +70,6 @@ class Command(NoArgsCommand):
         self._import_table_data('invCategories', InvCategory, [
             ('categoryID', 'pk', None),
             ('categoryName', 'name', None),
-            ('description', 'description', _string_null_to_empty),
             ('published', 'is_published', _int_to_bool),
         ])
 
@@ -80,10 +79,7 @@ class Command(NoArgsCommand):
             ('groupID', 'pk', None),
             ('categoryID', 'invcategory_id', None),
             ('groupName', 'name', None),
-            ('description', 'description', _string_null_to_empty),
             ('useBasePrice', 'is_use_baseprice', _int_to_bool),
-            ('allowManufacture', 'is_allow_manufacture', _int_to_bool),
-            ('allowRecycler', 'is_allow_recycler', _int_to_bool),
             ('anchored', 'is_anchored', _int_to_bool),
             ('anchorable', 'is_anchorable', _int_to_bool),
             ('fittableNonSingleton', 'is_fittable_non_singleton', _int_to_bool),

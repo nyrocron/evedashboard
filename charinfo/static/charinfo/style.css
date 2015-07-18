@@ -132,7 +132,7 @@ div.tile span.corpinfo
 
 .warning:before
 {
-    content: url(/static/charinfo/error.png);
+    content: url(/evedashboard/static/charinfo/error.png);
     margin-right: 5px;
     vertical-align: middle;
 }

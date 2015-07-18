@@ -5,7 +5,7 @@ $(document).ready(function () {
 function updateTiles() {
   $("div.tile").each(function (index) {
     var characterID = $(this).data("charid");
-    $(this).load("/charinfo/tile/" + characterID + "/");
+    $(this).load("/evedashboard/charinfo/tile/" + characterID + "/");
   });
 
   setTimeout(updateTiles, 30000);

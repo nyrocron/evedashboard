@@ -1,7 +1,7 @@
 # Django settings for eve project.
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+#DEBUG = True
+#TEMPLATE_DEBUG = DEBUG
 
 ADMINS = [
     # ('Your Name', 'your_email@example.com'),
@@ -26,13 +26,14 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+USE_X_FORWARDED_HOST = True
+ALLOWED_HOSTS = ['*']  # adjust this
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'Europe/Berlin'
+TIME_ZONE = 'UTC'  # adjust this
 USE_TZ = True
 
 # Language code for this installation. All choices can be found here:
@@ -65,11 +66,11 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = '/home/evedashboard/static/'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
-STATIC_URL = '/static/'
+STATIC_URL = 'https://nyronet.de/evedashboard/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = [
@@ -87,7 +88,7 @@ STATICFILES_FINDERS = [
 ]
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '' # configure this
+SECRET_KEY = 'RANDOM_CHARS_GO_HERE' # configure this
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = [
@@ -131,6 +132,8 @@ INSTALLED_APPS = [
     'eveapi',
     'charinfo',
     'evestatic',
+    'charmanager',
+    'corpinfo',
 ]
 
 # A sample logging configuration. The only tangible logging
@@ -170,3 +173,5 @@ CACHES = {
         #'LOCATION': 'unix:/var/run/memcached/memcached.sock',
     }
 }
+
+LOGIN_URL = '/evedashboard/accounts/login/'
